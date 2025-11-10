@@ -1,4 +1,4 @@
-
+﻿
 using System;
 
 namespace LabWork
@@ -20,7 +20,7 @@ namespace LabWork
             }
         }
 
-     
+
         protected static string ReadOnlyLetters(string prompt)
         {
             while (true)
@@ -42,8 +42,8 @@ namespace LabWork
         public virtual void Vvesty()
         {
             prizv = ReadOnlyLetters("Прізвище практиканта: ");
-            imya  = ReadOnlyLetters("Ім'я практиканта: ");
-            vuz   = ReadOnlyLetters("ВНЗ: ");
+            imya = ReadOnlyLetters("Ім'я практиканта: ");
+            vuz = ReadOnlyLetters("ВНЗ: ");
         }
 
         public bool ChySymPrizv()
@@ -125,7 +125,7 @@ namespace LabWork
             Console.WriteLine($"Посада: {posada}");
 
 
-Console.WriteLine($"ВНЗ: {vuz}");
+            Console.WriteLine($"ВНЗ: {vuz}");
             Console.WriteLine($"Закінчив: {zaklad}");
             Console.WriteLine($"Дата прийому: {dataPrijomu:yyyy-MM-dd}");
             RozrahuvatyStaj(out int ry, out int my, out int dy);
@@ -150,3 +150,4 @@ Console.WriteLine($"ВНЗ: {vuz}");
         }
     }
 
+}
