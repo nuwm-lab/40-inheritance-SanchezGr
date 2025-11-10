@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace LabWork
 {
-    class Praktykant
+    public class Praktykant
     {
         public string LastName { get; protected set; }
         public string FirstName { get; protected set; }
@@ -25,7 +25,8 @@ namespace LabWork
                 Console.Write(prompt);
                 string s = Console.ReadLine();
                 s = (s ?? "").Trim();
-                if (s.Length == 0)
+
+                if (string.IsNullOrWhiteSpace(s))
                 {
                     Console.WriteLine("Введіть дані");
                     continue;
@@ -41,7 +42,7 @@ namespace LabWork
                 }
                 if (ok) return s;
 
-                Console.WriteLine("Помилка, неправильний ввід );
+                Console.WriteLine("Помилка, неправильний ввід");
             }
         }
 
@@ -49,7 +50,7 @@ namespace LabWork
         {
             var ln = ReadOnlyLetters("Прізвище практиканта: ");
             var fn = ReadOnlyLetters("Ім'я практиканта: ");
-            var u  = ReadOnlyLetters("ВНЗ: ");
+            var u = ReadOnlyLetters("ВНЗ: ");
             return new Praktykant(ln, fn, u);
         }
 
@@ -81,7 +82,7 @@ namespace LabWork
         }
     }
 
-    class PracivnykFirmy : Praktykant
+    public class PracivnykFirmy : Praktykant
     {
         public DateTime HireDate { get; private set; }
         public string GraduatedSchool { get; private set; }
@@ -118,8 +119,8 @@ namespace LabWork
         {
             var baseObj = Praktykant.ReadFromConsole();
             var school = ReadOnlyLetters("Заклад, який закінчив: ");
-            var pos    = ReadOnlyLetters("Посада: ");
-            var date   = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
+            var pos = ReadOnlyLetters("Посада: ");
+            var date = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
             return new PracivnykFirmy(baseObj.LastName, baseObj.FirstName, baseObj.University,
                                       school, pos, date);
         }
@@ -148,18 +149,16 @@ namespace LabWork
 
         public override void Print()
         {
-            Console.WriteLine($"\nПрацівник фірми: {FirstName} {LastName}");
+            base.Print();
             Console.WriteLine($"Посада: {Position}");
-            Console.WriteLine($"ВНЗ: {University}");
             Console.WriteLine($"Закінчив: {GraduatedSchool}");
             Console.WriteLine($"Дата прийому: {HireDate:yyyy-MM-dd}");
             Experience(out int y, out int m, out int d);
             Console.WriteLine($"Стаж роботи: {y} р. {m} міс. {d} дн.");
-            Console.WriteLine($"Симетричне прізвище: {(IsSurnamePalindrome() ? "Так" : "Ні")}");
         }
     }
 
-    class Program
+    public class Program
     {
         static void Main()
         {
@@ -171,3 +170,4 @@ namespace LabWork
         }
     }
 }
+
