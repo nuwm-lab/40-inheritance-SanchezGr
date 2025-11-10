@@ -41,7 +41,7 @@ namespace LabWork
                 }
                 if (ok) return s;
 
-                Console.WriteLine("Помилка, неправильний ввід );
+                Console.WriteLine("Помилка, неправильний ввід ");
             }
         }
 
@@ -110,7 +110,7 @@ namespace LabWork
                         DateTimeStyles.None, out var dt))
                     return dt.Date;
 
-                Console.WriteLine("Неправильний формат. Приклади: 2023-09-01 або 01.09.2023");
+                Console.WriteLine("Неправильний формат.");
             }
         }
 
@@ -119,7 +119,7 @@ namespace LabWork
             var baseObj = Praktykant.ReadFromConsole();
             var school = ReadOnlyLetters("Заклад, який закінчив: ");
             var pos    = ReadOnlyLetters("Посада: ");
-            var date   = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
+            var date   = ReadDateOneLine("Дата прийому (yyyy-MM-dd  ");
             return new PracivnykFirmy(baseObj.LastName, baseObj.FirstName, baseObj.University,
                                       school, pos, date);
         }
