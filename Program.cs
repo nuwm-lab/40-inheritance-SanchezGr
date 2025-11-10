@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 
 namespace LabWork
 {
@@ -24,13 +23,25 @@ namespace LabWork
             while (true)
             {
                 Console.Write(prompt);
-                string s = Console.ReadLine()?.Trim() ?? "";
-                if (s.Length == 0) { Console.WriteLine("Введіть дані"); continue; }
+                string s = Console.ReadLine();
+                s = (s ?? "").Trim();
+                if (s.Length == 0)
+                {
+                    Console.WriteLine("Введіть дані");
+                    continue;
+                }
 
-                bool ok = s.All(c => char.IsLetter(c) || c == ' ' || c == '-' || c == '\'' || c == '’');
+                bool ok = true;
+                foreach (char c in s)
+                {
+                    if (!(char.IsLetter(c) || c == ' ' || c == '-' || c == '\'' || c == '’'))
+                    {
+                        ok = false; break;
+                    }
+                }
                 if (ok) return s;
 
-                Console.WriteLine("Помилка: дозволені лише літери, пробіл, дефіс, апостроф.");
+                Console.WriteLine("Помилка, неправильний ввід );
             }
         }
 
@@ -45,10 +56,14 @@ namespace LabWork
         public bool IsSurnamePalindrome()
         {
             if (string.IsNullOrWhiteSpace(LastName)) return false;
-            var letters = new string(LastName
-                .ToLower(CultureInfo.CurrentCulture)
-                .Where(char.IsLetter).ToArray());
-            if (letters.Length == 0) return false;
+
+            var buf = new System.Text.StringBuilder(LastName.Length);
+            foreach (char c in LastName)
+                if (char.IsLetter(c)) buf.Append(c);
+
+            if (buf.Length == 0) return false;
+
+            string letters = buf.ToString().ToLowerInvariant();
             int l = 0, r = letters.Length - 1;
             while (l < r)
             {
@@ -94,31 +109,30 @@ namespace LabWork
                         s, formats, CultureInfo.InvariantCulture,
                         DateTimeStyles.None, out var dt))
                     return dt.Date;
+
                 Console.WriteLine("Неправильний формат. Приклади: 2023-09-01 або 01.09.2023");
             }
         }
 
         public static PracivnykFirmy ReadFromConsole()
         {
-            var p = new PracivnykFirmy();
             var baseObj = Praktykant.ReadFromConsole();
-            p.LastName = baseObj.LastName;
-            p.FirstName = baseObj.FirstName;
-            p.University = baseObj.University;
-
-            p.GraduatedSchool = ReadOnlyLetters("Заклад, який закінчив: ");
-            p.Position = ReadOnlyLetters("Посада: ");
-            p.HireDate = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
-            return p;
+            var school = ReadOnlyLetters("Заклад, який закінчив: ");
+            var pos    = ReadOnlyLetters("Посада: ");
+            var date   = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
+            return new PracivnykFirmy(baseObj.LastName, baseObj.FirstName, baseObj.University,
+                                      school, pos, date);
         }
 
         public void Experience(out int years, out int months, out int days)
         {
             var now = DateTime.Today;
             if (now < HireDate) { years = months = days = 0; return; }
+
             years = now.Year - HireDate.Year;
             months = now.Month - HireDate.Month;
             days = now.Day - HireDate.Day;
+
             if (days < 0)
             {
                 var prev = now.AddMonths(-1);
