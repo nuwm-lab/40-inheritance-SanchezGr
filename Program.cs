@@ -1,4 +1,4 @@
-﻿
+
 using System;
 
 namespace LabWork
@@ -150,4 +150,4 @@ namespace LabWork
         }
     }
 
-}
+
