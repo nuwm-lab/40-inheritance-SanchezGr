@@ -1,25 +1,23 @@
-﻿
-using System;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 
 namespace LabWork
 {
     class Praktykant
     {
-        protected string prizv;
-        protected string imya;
-        protected string vuz;
+        public string LastName { get; protected set; }
+        public string FirstName { get; protected set; }
+        public string University { get; protected set; }
 
-        protected static string ReadNonEmpty(string prompt)
+        public Praktykant() { }
+
+        public Praktykant(string lastName, string firstName, string university)
         {
-            while (true)
-            {
-                Console.Write(prompt);
-                string s = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(s)) return s.Trim();
-                Console.WriteLine("Введіть дані");
-            }
+            LastName = lastName;
+            FirstName = firstName;
+            University = university;
         }
-
 
         protected static string ReadOnlyLetters(string prompt)
         {
@@ -27,129 +25,135 @@ namespace LabWork
             {
                 Console.Write(prompt);
                 string s = Console.ReadLine()?.Trim() ?? "";
+                if (s.Length == 0) { Console.WriteLine("Введіть дані"); continue; }
 
-                bool ok = true;
-                foreach (char c in s)
-                    if (!char.IsLetter(c)) ok = false;
+                bool ok = s.All(c => char.IsLetter(c) || c == ' ' || c == '-' || c == '\'' || c == '’');
+                if (ok) return s;
 
-                if (s.Length > 0 && ok)
-                    return s;
-
-                Console.WriteLine("Помилка: вводьте лише літери.");
+                Console.WriteLine("Помилка, неправильний ввід");
             }
         }
 
-        public virtual void Vvesty()
+        public static Praktykant ReadFromConsole()
         {
-            prizv = ReadOnlyLetters("Прізвище практиканта: ");
-            imya = ReadOnlyLetters("Ім'я практиканта: ");
-            vuz = ReadOnlyLetters("ВНЗ: ");
+            var ln = ReadOnlyLetters("Прізвище практиканта: ");
+            var fn = ReadOnlyLetters("Ім'я практиканта: ");
+            var u  = ReadOnlyLetters("ВНЗ: ");
+            return new Praktykant(ln, fn, u);
         }
 
-        public bool ChySymPrizv()
+        public bool IsSurnamePalindrome()
         {
-            if (string.IsNullOrEmpty(prizv)) return false;
-            string s = prizv.ToLower();
-            string t = "";
-            for (int i = 0; i < s.Length; i++)
-                if (char.IsLetter(s[i])) t += s[i];
-            int l = 0, r = t.Length - 1;
+            if (string.IsNullOrWhiteSpace(LastName)) return false;
+            var letters = new string(LastName
+                .ToLower(CultureInfo.CurrentCulture)
+                .Where(char.IsLetter).ToArray());
+            if (letters.Length == 0) return false;
+            int l = 0, r = letters.Length - 1;
             while (l < r)
             {
-                if (t[l] != t[r]) return false;
+                if (letters[l] != letters[r]) return false;
                 l++; r--;
             }
-            return t.Length > 0;
+            return true;
         }
 
-        public virtual void Vyvesty()
+        public virtual void Print()
         {
-            Console.WriteLine($"\nПрактикант: {imya} {prizv}");
-            Console.WriteLine($"ВНЗ: {vuz}");
-            Console.WriteLine($"Симетричне прізвище: {(ChySymPrizv() ? "Так" : "Ні")}");
+            Console.WriteLine($"\nПрактикант: {FirstName} {LastName}");
+            Console.WriteLine($"ВНЗ: {University}");
+            Console.WriteLine($"Симетричне прізвище: {(IsSurnamePalindrome() ? "Так" : "Ні")}");
         }
     }
 
     class PracivnykFirmy : Praktykant
     {
-        private DateTime dataPrijomu;
-        private string zaklad;
-        private string posada;
+        public DateTime HireDate { get; private set; }
+        public string GraduatedSchool { get; private set; }
+        public string Position { get; private set; }
 
-        private static DateTime ReadDateOneLine(string prompt)
+        public PracivnykFirmy() { }
+
+        public PracivnykFirmy(string lastName, string firstName, string university,
+                              string school, string position, DateTime hireDate)
+            : base(lastName, firstName, university)
+        {
+            GraduatedSchool = school;
+            Position = position;
+            HireDate = hireDate.Date;
+        }
+
+        static DateTime ReadDateOneLine(string prompt)
         {
             string[] formats = { "yyyy-MM-dd", "dd.MM.yyyy" };
             while (true)
             {
                 Console.Write(prompt);
                 string s = Console.ReadLine();
-                if (DateTime.TryParseExact(s, formats,
-                        System.Globalization.CultureInfo.InvariantCulture,
-                        System.Globalization.DateTimeStyles.None, out var dt))
+                if (DateTime.TryParseExact(
+                        s, formats, CultureInfo.InvariantCulture,
+                        DateTimeStyles.None, out var dt))
                     return dt.Date;
-                Console.WriteLine("Неправильний ввід даних, спробуйте ще раз:");
+                Console.WriteLine("Неправильний формат. Приклади: 2023-09-01 або 01.09.2023");
             }
         }
 
-        public override void Vvesty()
+        public static PracivnykFirmy ReadFromConsole()
         {
-            base.Vvesty();
-            zaklad = ReadOnlyLetters("Заклад, який закінчив: ");
-            posada = ReadOnlyLetters("Посада: ");
-            dataPrijomu = ReadDateOneLine("Дата прийому (yyyy-MM-dd): ");
+            var p = new PracivnykFirmy();
+            var baseObj = Praktykant.ReadFromConsole();
+            p.LastName = baseObj.LastName;
+            p.FirstName = baseObj.FirstName;
+            p.University = baseObj.University;
+
+            p.GraduatedSchool = ReadOnlyLetters("Заклад, який закінчив: ");
+            p.Position = ReadOnlyLetters("Посада: ");
+            p.HireDate = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
+            return p;
         }
 
-        public void RozrahuvatyStaj(out int r, out int m, out int d)
+        public void Experience(out int years, out int months, out int days)
         {
-            DateTime now = DateTime.Today;
-            if (now < dataPrijomu) { r = m = d = 0; return; }
-            r = now.Year - dataPrijomu.Year;
-            m = now.Month - dataPrijomu.Month;
-            d = now.Day - dataPrijomu.Day;
-            if (d < 0)
+            var now = DateTime.Today;
+            if (now < HireDate) { years = months = days = 0; return; }
+            years = now.Year - HireDate.Year;
+            months = now.Month - HireDate.Month;
+            days = now.Day - HireDate.Day;
+            if (days < 0)
             {
                 var prev = now.AddMonths(-1);
-                d += DateTime.DaysInMonth(prev.Year, prev.Month);
-                m--;
+                days += DateTime.DaysInMonth(prev.Year, prev.Month);
+                months--;
             }
-            if (m < 0)
+            if (months < 0)
             {
-                m += 12;
-                r--;
+                months += 12;
+                years--;
             }
         }
 
-        public override void Vyvesty()
+        public override void Print()
         {
-            Console.WriteLine($"\nПрацівник фірми: {imya} {prizv}");
-            Console.WriteLine($"Посада: {posada}");
-
-
-            Console.WriteLine($"ВНЗ: {vuz}");
-            Console.WriteLine($"Закінчив: {zaklad}");
-            Console.WriteLine($"Дата прийому: {dataPrijomu:yyyy-MM-dd}");
-            RozrahuvatyStaj(out int ry, out int my, out int dy);
-            Console.WriteLine($"Стаж роботи: {ry} р. {my} міс. {dy} дн.");
-            Console.WriteLine($"Симетричне прізвище: {(ChySymPrizv() ? "Так" : "Ні")}");
+            Console.WriteLine($"\nПрацівник фірми: {FirstName} {LastName}");
+            Console.WriteLine($"Посада: {Position}");
+            Console.WriteLine($"ВНЗ: {University}");
+            Console.WriteLine($"Закінчив: {GraduatedSchool}");
+            Console.WriteLine($"Дата прийому: {HireDate:yyyy-MM-dd}");
+            Experience(out int y, out int m, out int d);
+            Console.WriteLine($"Стаж роботи: {y} р. {m} міс. {d} дн.");
+            Console.WriteLine($"Симетричне прізвище: {(IsSurnamePalindrome() ? "Так" : "Ні")}");
         }
     }
-//teste for ai
+
     class Program
     {
-    
         static void Main()
         {
-            var praktykant = new Praktykant();
-            Console.WriteLine(" Введення даних для практиканта ");
-            praktykant.Vvesty();
-            praktykant.Vyvesty();
+            var praktykant = Praktykant.ReadFromConsole();
+            praktykant.Print();
 
-
-            var pracivnyk = new PracivnykFirmy();
-            Console.WriteLine("\n Введення даних для працівника ");
-            pracivnyk.Vvesty();
-            pracivnyk.Vyvesty();
+            var pracivnyk = PracivnykFirmy.ReadFromConsole();
+            pracivnyk.Print();
         }
-    } 
-
+    }
 }
