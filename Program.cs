@@ -133,9 +133,10 @@ namespace LabWork
             Console.WriteLine($"Симетричне прізвище: {(ChySymPrizv() ? "Так" : "Ні")}");
         }
     }
-
+//teste for ai
     class Program
     {
+    
         static void Main()
         {
             var praktykant = new Praktykant();
@@ -143,11 +144,12 @@ namespace LabWork
             praktykant.Vvesty();
             praktykant.Vyvesty();
 
+
             var pracivnyk = new PracivnykFirmy();
             Console.WriteLine("\n Введення даних для працівника ");
             pracivnyk.Vvesty();
             pracivnyk.Vyvesty();
         }
-    }
+    } 
 
 }
