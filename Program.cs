@@ -20,7 +20,7 @@ namespace LabWork
             }
         }
 
-        // ---- нова функція: тільки літери ----
+     
         protected static string ReadOnlyLetters(string prompt)
         {
             while (true)
