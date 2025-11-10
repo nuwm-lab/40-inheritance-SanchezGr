@@ -94,7 +94,7 @@ namespace LabWork
                         s, formats, CultureInfo.InvariantCulture,
                         DateTimeStyles.None, out var dt))
                     return dt.Date;
-                Console.WriteLine("Неправильний формат. Приклади: 2023-09-01 або 01.09.2023");
+                Console.WriteLine("Неправильний формат);
             }
         }
 
@@ -108,7 +108,7 @@ namespace LabWork
 
             p.GraduatedSchool = ReadOnlyLetters("Заклад, який закінчив: ");
             p.Position = ReadOnlyLetters("Посада: ");
-            p.HireDate = ReadDateOneLine("Дата прийому (yyyy-MM-dd або dd.MM.yyyy): ");
+            p.HireDate = ReadDateOneLine("Дата прийому yyyy-MM-dd ");
             return p;
         }
 
