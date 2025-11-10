@@ -1,4 +1,4 @@
-﻿
+
 using System;
 
 namespace LabWork
@@ -149,4 +149,4 @@ Console.WriteLine($"ВНЗ: {vuz}");
             pracivnyk.Vyvesty();
         }
     }
-}; 
+
